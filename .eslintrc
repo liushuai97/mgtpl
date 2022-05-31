@@ -1,0 +1,23 @@
+{
+  "extends": "airbnb",
+  "parser": "babel-eslint",
+  "rules": {
+    "no-param-reassign": 0,
+    "prefer-rest-params": 0,
+    "no-plusplus": 0,
+    "prefer-destructuring": 0,
+    "no-shadow": 0,
+    "no-console": 0,
+    "global-require": 0,
+    "space-before-function-paren": "off",
+    "linebreak-style": "off",
+    "consistent-return": "off",
+    "quotes": "off",
+    "import/no-unresolved": "off",
+    "import/extensions": "off",
+    "no-undef": "off",
+    "no-underscore-dangle": "off",
+    "func-names": "off",
+    " prefer-template": "off"
+  }
+}
