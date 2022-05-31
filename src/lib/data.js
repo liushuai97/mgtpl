@@ -1,4 +1,5 @@
-{
+/* eslint-disable */
+module.exports = {
   "r": "getChildren",
   "x": "call",
   "y": "children",
