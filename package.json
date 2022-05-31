@@ -1,6 +1,6 @@
 {
   "name": "mgtpl",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Handy Text Weaken filters plugins for your project",
   "main": "dist/mgtpl.js",
   "scripts": {
@@ -13,11 +13,8 @@
     "url": "git+https://github.com/liushuai97/mgtpl.git"
   },
   "keywords": [
-    "vue",
-    "custom",
-    "sensitive",
-    "weaken",
-    "filter",
+    "h5",
+    "topology",
     "plugin"
   ],
   "author": "liushuai",

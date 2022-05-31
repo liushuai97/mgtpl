@@ -7,7 +7,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 };
 
 /* eslint-disable */
-var _require = require('./src/lib/data.json');
+var _require = require('./data.json');
 var r = _require.r;
 var x = _require.x;
 var y = _require.y;
