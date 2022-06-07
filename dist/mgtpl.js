@@ -15624,6 +15624,324 @@ var TK = function TK(u, S, Y) {
   }, rU[$_] = UN, rU;
 };
 
-return TK;
+var T = TK(window, document);
+
+var _createClass = function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) { descriptor.writable = true; }Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }return function (Constructor, protoProps, staticProps) {
+    if (protoProps) { defineProperties(Constructor.prototype, protoProps); }if (staticProps) { defineProperties(Constructor, staticProps); }return Constructor;
+  };
+}();
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+/* eslint-disable */
+function globalToLocal(evt, div) {
+  if (evt.touches) {
+    if (evt.changedTouches && evt.changedTouches.length) {
+      evt = evt.changedTouches[0];
+    } else {
+      evt = evt.touches[0];
+    }
+  }
+  var clientRect = div.getBoundingClientRect();
+  var x = evt.clientX || 0;
+  var y = evt.clientY || 0;
+  if (T.isTouchSupport && T.isSafari) {
+    if (window.pageXOffset && x === evt.pageX) {
+      x -= window.pageXOffset;
+    }
+    if (window.pageYOffset && y === evt.pageY) {
+      y -= window.pageYOffset;
+    }
+  }
+  return [x - clientRect.left, y - clientRect.top];
+}
+
+var Overview = function () {
+  function Overview(html, graph) {
+    _classCallCheck(this, Overview);
+
+    this._invalidateGraphFlag = false;
+    this.visible = true;
+    this.html = html;
+    this.canvas = T.createCanvas(true);
+    this.html.appendChild(this.canvas);
+    new T.DragSupport(this.canvas, this);
+    this.setGraph(graph);
+  }
+
+  _createClass(Overview, [{
+    key: 'setGraph',
+    value: function setGraph(graph) {
+      if (this.graph === graph) {
+        return;
+      }
+      this._uninstall();
+      this.graph = graph;
+      this._install();
+    }
+  }, {
+    key: '_install',
+    value: function _install() {
+      if (!this.graph) {
+        return;
+      }
+      if (!this._onPropertyChanged) {
+        this._onPropertyChanged = function (evt) {
+          var kind = evt.kind;
+          if (kind === 'element.bounds') {
+            this._invalidateGraph();
+            return;
+          }
+          if (kind === 'transform' || kind === 'viewport') {
+            this.invalidate();
+          }
+        }.bind(this);
+        this._onDataChanged = function (evt) {
+          this._invalidateGraph();
+        }.bind(this);
+      }
+      this.graph.propertyChangeDispatcher.addListener(this._onPropertyChanged);
+      this.graph.dataPropertyChangeDispatcher.addListener(this._onDataChanged);
+      this.graph.listChangeDispatcher.addListener(this._onDataChanged);
+      this._invalidateGraph(true);
+    }
+  }, {
+    key: '_uninstall',
+    value: function _uninstall() {
+      if (!this.graph || !this._onPropertyChanged) {
+        return;
+      }
+      this.graph.propertyChangeDispatcher.removeListener(this._onPropertyChanged);
+      this.graph.dataPropertyChangeDispatcher.removeListener(this._onDataChanged);
+      this.graph.listChangeDispatcher.removeListener(this._onDataChanged);
+      this.imageInfo = null;
+      this.bounds = null;
+      this.scale = null;
+    }
+  }, {
+    key: '_toCanvas',
+    value: function _toCanvas(x, y) {
+      x = this.scale * (x - this.bounds.x);
+      y = this.scale * (y - this.bounds.y);
+      return [x, y];
+    }
+  }, {
+    key: '_toGraph',
+    value: function _toGraph(evt) {
+      var xy = globalToLocal(evt, this.html);
+      var x = xy[0] / this.scale + this.bounds.x;
+      var y = xy[1] / this.scale + this.bounds.y;
+      return [x, y];
+    }
+  }, {
+    key: '_validateGraph',
+    value: function _validateGraph() {
+      this._invalidateGraphFlag = false;
+      if (!this.visible) {
+        return;
+      }
+      var width = this.html.clientWidth,
+          height = this.html.clientHeight;
+      if (!width || !height) {
+        return;
+      }
+      var bounds = new T.Rect();
+      bounds.add(this.graph.bounds);
+      var imageScale = Math.min(width / bounds.width, height / bounds.height) * this.canvas.ratio;
+
+      this.imageInfo = this.exportGraphImage(imageScale, bounds);
+
+      this.imageInfo.scale = imageScale;
+      this.imageInfo.bounds = bounds;
+
+      this.invalidate();
+    }
+  }, {
+    key: 'exportGraphImage',
+    value: function exportGraphImage(scale, bounds) {
+      return this.graph.exportImage(scale, bounds);
+    }
+  }, {
+    key: '_invalidateGraph',
+    value: function _invalidateGraph(force) {
+      if (!this.graph || !force && this._invalidateGraphFlag) {
+        return;
+      }
+      this._invalidateGraphFlag = true;
+      this.graph.callLater(this._validateGraph, this, force ? 100 : 1000);
+    }
+  }, {
+    key: 'invalidate',
+    value: function invalidate(force) {
+      if (!force && this._invalidateFlag) {
+        return;
+      }
+      this._invalidateFlag = true;
+      setTimeout(this.validate.bind(this));
+    }
+  }, {
+    key: 'validate',
+    value: function validate() {
+      this._invalidateFlag = false;
+      var imageInfo = this.imageInfo;
+      if (!imageInfo) {
+        return;
+      }
+      var viewportBounds = this.graph.viewportBounds;
+      if (!viewportBounds.height || !viewportBounds.width) {
+        return;
+      }
+
+      var canvas = this.canvas;
+      var ratio = canvas.ratio;
+      var g = canvas.getContext('2d');
+      var width = this.html.clientWidth,
+          height = this.html.clientHeight;
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      canvas.width = width * ratio;
+      canvas.height = height * ratio;
+      g.scale(ratio, ratio);
+
+      var bounds = new T.Rect(imageInfo.bounds);
+      bounds.add(viewportBounds);
+      var scale = Math.min(width / bounds.width, height / bounds.height);
+      this.scale = scale;
+
+      var offsetX = (width / scale - bounds.width) / 2;
+      var offsetY = (height / scale - bounds.height) / 2;
+      bounds.x -= offsetX;
+      bounds.y -= offsetY;
+      bounds.width = width / scale;
+      bounds.height = height / scale;
+      this.bounds = bounds;
+
+      g.save();
+      var xy = this._toCanvas(imageInfo.bounds.x, imageInfo.bounds.y);
+      g.translate(xy[0], xy[1]);
+      g.scale(scale / imageInfo.scale, scale / imageInfo.scale);
+      g.drawImage(this.imageInfo.canvas, 0, 0);
+      g.restore();
+
+      g.beginPath();
+      g.moveTo(0, 0);
+      g.lineTo(canvas.width, 0);
+      g.lineTo(canvas.width, canvas.height);
+      g.lineTo(0, canvas.height);
+      g.lineTo(0, 0);
+
+      xy = this._toCanvas(viewportBounds.x, viewportBounds.y);
+      var x = xy[0];
+      var y = xy[1];
+      width = viewportBounds.width * scale;
+      height = viewportBounds.height * scale;
+
+      g.moveTo(x, y);
+      g.lineTo(x, y + height);
+      g.lineTo(x + width, y + height);
+      g.lineTo(x + width, y);
+      g.closePath();
+      g.fillStyle = "rgba(30, 30, 30, 0.3)";
+      g.fill();
+      g.lineWidth = 0.5;
+      g.strokeStyle = '#333';
+      g.strokeRect(x, y, width, height);
+    }
+  }, {
+    key: 'accept',
+    value: function accept() {
+      return this.graph != null;
+    }
+  }, {
+    key: 'startdrag',
+    value: function startdrag(evt) {
+      this.enddrag();
+      if (!this.scale) {
+        return;
+      }
+      var xy = this._toGraph(evt);
+      var viewport = this.graph.viewportBounds;
+      if (viewport.contains(xy[0], xy[1])) {
+        this._dragInfo = {
+          scale: this.scale / this.graph.scale,
+          point: xy
+        };
+        this.graph.stopAnimation();
+      }
+    }
+  }, {
+    key: 'ondrag',
+    value: function ondrag(evt) {
+      if (!this._dragInfo) {
+        return;
+      }
+      var scale = this._dragInfo.scale;
+      var dx = evt.dx;
+      var dy = evt.dy;
+      dx /= scale;
+      dy /= scale;
+      this.graph.translate(-dx, -dy, false);
+    }
+  }, {
+    key: 'enddrag',
+    value: function enddrag() {
+      this._dragInfo = null;
+    }
+  }, {
+    key: 'onstart',
+    value: function onstart(evt) {
+      T.stopEvent(evt);
+      var xy = this._toGraph(evt);
+      this.graph.centerTo(xy[0], xy[1]);
+    }
+  }, {
+    key: 'onmousewheel',
+    value: function onmousewheel(evt) {
+      T.stopEvent(evt);
+      var xy = this._toGraph(evt);
+      xy = this.graph.toCanvas(xy[0], xy[1]);
+      this.graph.zoomAt(Math.pow(this.graph.scaleStep, evt.delta), xy.x, xy.y);
+    }
+  }, {
+    key: 'ondblclick',
+    value: function ondblclick(evt) {
+      var graph = this.graph;
+      if (graph.enableDoubleClickToOverview) {
+        var resetScale = graph.resetScale || 1;
+        if (Math.abs(graph.scale - resetScale) < 0.001) {
+          graph.zoomToOverview();
+        } else {
+          graph.moveToCenter(resetScale);
+        }
+      }
+    }
+  }, {
+    key: 'setVisible',
+    value: function setVisible(visible) {
+      this.visible = visible;
+      if (visible) {
+        this.html.style.display = 'block';
+      } else {
+        this.html.style.display = 'none';
+      }
+      this._invalidateGraph();
+    }
+  }]);
+
+  return Overview;
+}();
+
+var mgtpl = { TK: TK, Overview: Overview };
+
+return mgtpl;
 
 })));
