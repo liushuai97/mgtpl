@@ -15934,6 +15934,837 @@ var Overview = function () {
   return Overview;
 }();
 
-var mgtpl = { TK: TK, Overview: Overview };
+/* eslint-disable */
+var i18n = {
+  'zh-cn': {
+    'Name': '名称',
+    'Render Color': '渲染色',
+    'Border': '边框',
+    'Border Color': '边框颜色',
+    'Location': '坐标',
+    'Size': '尺寸',
+    'Rotate': '旋转',
+    'Label Color': '文本颜色',
+    'Background Color': '背景色',
+    'Font Size': '字体大小',
+    'json file is empty': 'JSON文件为空',
+    'Save Error': '保存错误',
+    'Save Success': '保存成功',
+    'Update': '更新',
+    'Export JSON': '导出JSON',
+    'Load File ...': '加载文件 ...',
+    'Download File': '下载文件',
+    'Save': '保存',
+    'Rename': '重命名',
+    'Input Element Name': '输入图元名称',
+    'Solid Line': '实线样式',
+    'Dashed Line': '虚线样式',
+    'Line Width': '连线宽度',
+    'Input Line Width': '输入连线宽度',
+    'Line Color': '连线颜色',
+    'Input Line Color': '输入连线颜色',
+    'Out of Group': '脱离分组',
+    'Send to Top': '置顶显示',
+    'Send to Bottom': '置底显示',
+    'Reset Layer': '恢复默认层',
+    'Clear Graph': '清空画布',
+    'Zoom In': '放大',
+    'Zoom Out': '缩小',
+    '1:1': '1:1',
+    'Pan Mode': '平移模式',
+    'Rectangle Select': '框选模式',
+    'Text': '文字',
+    'Basic Nodes': '基本节点',
+    'Register Images': '注册图片',
+    'Default Shapes': '默认形状',
+    'Element counts and loading time - Commercial license support more elements and more than 50% performance increase': '图元加载数量与时间 - 商业授权支持更高图元数量, 以及50%以上的性能提升',
+    'Submit': '提交',
+    'Element Counts': '图元数量',
+    'with Edge': '包含连线',
+    'with Group': '包含分组',
+    'Show Label': '显示标签',
+    'Zoom to Overview': '缩放到窗口',
+    'Delayed Rendering': '延迟绘制',
+    'Angle:': '角度:',
+    'Regular': '均匀分配',
+    'Proportional': '按需分配',
+    'Radius:': '半径:',
+    'Uniform': '统一半径',
+    'Variable': '可变半径',
+    'Min Radius': '最小半径',
+    'Default Gap': '默认间距',
+    'Start Angle': '起始角度',
+    'Beijing': '北京',
+    'Shanghai': '上海',
+    'Changsha': '长沙',
+    'Import Error': '导入异常',
+    'Message': '消息',
+    'Image export preview': '图片导出预览',
+    'Canvas Size': '画布大小',
+    'Double click  to select the whole canvas range': '双击选择全画布范围',
+    'Export Range': '导出范围',
+    'Scale': '缩放比例',
+    'Output Size': '输出大小',
+    'Export': '导出',
+    'Print': '打印',
+    'Image size is too large, the export may appear memory error': '图幅太大，导出时可能出现内存不足',
+    'New Project': '新项目',
+    'Application Host': '应用主机',
+    'CPU Usage': 'CPU占用',
+    'Memory Usage': '内存占用',
+    'Hydrological stations': '水文监测站',
+    'Show Double Lane': '显示双车道',
+    'Show Traffic': '显示路况信息',
+    // toolbar
+    'Default Mode': '默认模式',
+    'Rectangle Selection': '框选模式',
+    'View Mode': '浏览模式',
+    'Create Edge': '创建连线',
+    'Create L Edge': '创建L型连线',
+    'Create Shape': '创建多边形',
+    'Create Line': '创建线条',
+    'Export Image': '导出图片',
+    'Double click merge': '双击合并',
+    'Double click Edit': '双击编辑',
+    'Public service \n center network topology': '公共事业服务\n中心网络拓扑图',
+    'Storage': '存储',
+    'Fiber Switch': '光纤交换机',
+    'Switch': '交换机',
+    'Core Switch': '核心交换机',
+    'Firewall': '防火墙',
+    'Router': '路由器',
+    'Intranet PC': '内网PC',
+    'Public Sector Service Center \n Center LAN': '公共事业服务中心\n中心局域网',
+    'Branches': '分支机构',
+    'Sinopec internal network area': '中国石化内部网络区',
+    'Remote access area': '远程接入区',
+    'Security management area': '安全管理区',
+    'Sinopec \nInternet node \n network': '中国石化\nInternet节点\n网络',
+    'Headquarters core \n switch': '总部核心\n交换机',
+    'Found the password guessing attack event \n ...': '发现口令猜测攻击事件\n ...',
+    'Server\nSwitch': '服务器\n交换机',
+    'Sinopec headquarters network area': '中国石化总部网络区域',
+    'Management system network area': '管理系统网络区域',
+    '': 'TMS,TMS\n数据库,财务公司\n新SAP,浪潮\n报表,共享平台\n数据库,固定报表\n数据库'
+  }
+};
+
+var lang = navigator.language || navigator.browserLanguage;
+lang = lang.toLowerCase();
+
+function getI18NString(key) {
+  if (!i18n[lang]) {
+    return key;
+  }
+  var result = i18n[lang][key];
+  if (result === undefined) {
+    return key;
+  }
+  return result;
+}
+
+/* eslint-disable */
+function createElement(_ref) {
+  var _ref$tagName = _ref.tagName,
+      tagName = _ref$tagName === undefined ? 'div' : _ref$tagName,
+      className = _ref.className,
+      parent = _ref.parent,
+      html = _ref.html;
+
+  var element = document.createElement(tagName);
+  className && (element.className = className);
+  parent && parent.appendChild(element);
+  html && (element.innerHTML = html);
+  return element;
+}
+
+
+
+
+
+var _isFileSaverSupported = void 0;
+
+function isBlobSupported() {
+  if (_isFileSaverSupported === undefined) {
+    try {
+      _isFileSaverSupported = !!new Blob();
+    } catch (e) {}
+  }
+  return _isFileSaverSupported;
+}
+
+function saveAs(blob, filename) {
+  if (!isBlobSupported()) {
+    throw 'file saver not be supported';
+  }
+  if (navigator.msSaveOrOpenBlob) {
+    return navigator.msSaveOrOpenBlob(blob, filename);
+  }
+  var a = document.createElement("a");
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  var csvUrl = URL.createObjectURL(blob);
+  a.href = csvUrl;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  a.remove();
+}
+
+/* eslint-disable */
+var currentDialog = void 0;
+
+function hide() {
+  if (!currentDialog) {
+    return;
+  }
+  if (!currentDialog.parentNode) {
+    currentDialog = null;
+    return;
+  }
+  currentDialog.parentNode.classList.remove('modal-open');
+  currentDialog.parentNode.removeChild(currentDialog);
+  currentDialog = null;
+}
+
+var ModalTemplate = '<div class="modal-backdrop in"></div>\n    <div class="modal-dialog">\n      <div class="modal-content">\n      </div>\n    </div>';
+
+function showDialog(_ref) {
+  var _ref$relatedTarget = _ref.relatedTarget,
+      relatedTarget = _ref$relatedTarget === undefined ? document.body : _ref$relatedTarget,
+      content = _ref.content;
+
+  currentDialog && this.hide();
+  relatedTarget.classList.add('modal-open');
+
+  currentDialog = createElement({
+    html: ModalTemplate,
+    className: 'modal in'
+  });
+  var body = currentDialog.querySelector('.modal-content');
+  if (content) {
+    if (content instanceof HTMLElement) {
+      body.appendChild(content);
+    } else {
+      body.innerHTML = content;
+    }
+  }
+
+  currentDialog.onclick = function (evt) {
+    if (evt.target !== evt.currentTarget) {
+      return;
+    }
+    hide();
+  };
+  relatedTarget.appendChild(currentDialog);
+  return body;
+}
+
+var _createClass$1 = function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) { descriptor.writable = true; }Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }return function (Constructor, protoProps, staticProps) {
+    if (protoProps) { defineProperties(Constructor.prototype, protoProps); }if (staticProps) { defineProperties(Constructor, staticProps); }return Constructor;
+  };
+}();
+
+function _classCallCheck$1(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+/* eslint-disable  */
+var template = '\
+  <h3 style="text-align: center;">' + getI18NString('Image export preview') + '</h3>\
+  <div>\
+  <label>' + getI18NString('Canvas Size') + '</label>\
+  <span class ="graph-export-panel__canvas_size"></span>\
+  </div>\
+  <div style="text-align: center;" title="' + getI18NString('Double click  to select the whole canvas range') + '">\
+  <div class ="graph-export-panel__export_canvas" style="position: relative; display: inline-block;">\
+  </div>\
+  </div>\
+  <div>\
+  <label>' + getI18NString('Export Range') + '</label>\
+  <span class ="graph-export-panel__export_bounds"></span>\
+  </div>\
+  <div>\
+  <label>' + getI18NString('Scale') + ': <input class ="graph-export-panel__export_scale" type="range" value="1" step="0.2" min="0.2" max="3"><span class ="graph-export-panel__export_scale_label">1</span></label>\
+  </div>\
+  <div>\
+  <label>' + getI18NString('Output Size') + ': </label><span class ="graph-export-panel__export_size"></span>\
+  </div>\
+  <div style="text-align: right">\
+  <button type="submit" class="btn btn-primary graph-export-panel__export_submit">' + getI18NString('Export') + '</button>\
+  <button type="submit" class="btn btn-primary graph-export-panel__print_submit">' + getI18NString('Print') + '</button>\
+  </div>';
+
+var ResizeBox = function () {
+  function ResizeBox(parent, onBoundsChange) {
+    var this$1 = this;
+
+    _classCallCheck$1(this, ResizeBox);
+
+    this.onBoundsChange = onBoundsChange;
+    this.parent = parent;
+    this.handleSize = T.isTouchSupport ? 20 : 8;
+
+    this.boundsDiv = this._createDiv(this.parent);
+    this.boundsDiv.type = "border";
+    this.boundsDiv.style.position = "absolute";
+    this.boundsDiv.style.border = "dashed 1px #888";
+    var handles = "lt,t,rt,l,r,lb,b,rb";
+    handles = handles.split(",");
+    for (var i = 0, l = handles.length; i < l; i++) {
+      var name = handles[i];
+      var handle = this$1._createDiv(this$1.parent);
+      handle.type = "handle";
+      handle.name = name;
+      handle.style.position = "absolute";
+      handle.style.backgroundColor = "#FFF";
+      handle.style.border = "solid 1px #555";
+      handle.style.width = handle.style.height = this$1.handleSize + "px";
+      var cursor = void 0;
+      if (name == 'lt' || name == 'rb') {
+        cursor = "nwse-resize";
+      } else if (name == 'rt' || name == 'lb') {
+        cursor = "nesw-resize";
+      } else if (name == 't' || name == 'b') {
+        cursor = "ns-resize";
+      } else {
+        cursor = "ew-resize";
+      }
+      handle.style.cursor = cursor;
+      this$1[handles[i]] = handle;
+    }
+    this.interaction = new T.DragSupport(this.parent, this);
+  }
+
+  _createClass$1(ResizeBox, [{
+    key: "destroy",
+    value: function destroy() {
+      this.interaction.destroy();
+    }
+  }, {
+    key: "update",
+    value: function update(width, height) {
+      this.wholeBounds = new T.Rect(0, 0, width, height);
+      this._setBounds(this.wholeBounds.clone());
+    }
+  }, {
+    key: "ondblclick",
+    value: function ondblclick(evt) {
+      if (this._bounds.equals(this.wholeBounds)) {
+        if (!this.oldBounds) {
+          this.oldBounds = this.wholeBounds.clone().grow(-this.wholeBounds.height / 5, -this.wholeBounds.width / 5);
+        }
+        this._setBounds(this.oldBounds, true);
+        return;
+      }
+      this._setBounds(this.wholeBounds.clone(), true);
+    }
+  }, {
+    key: "startdrag",
+    value: function startdrag(evt) {
+      if (evt.target.type) {
+        this.dragItem = evt.target;
+      }
+    }
+  }, {
+    key: "ondrag",
+    value: function ondrag(evt) {
+      if (!this.dragItem) {
+        return;
+      }
+      T.stopEvent(evt);
+      var dx = evt.dx;
+      var dy = evt.dy;
+      if (this.dragItem.type == "border") {
+        this._bounds.offset(dx, dy);
+        this._setBounds(this._bounds, true);
+      } else if (this.dragItem.type == "handle") {
+        var name = this.dragItem.name;
+        if (name[0] == 'l') {
+          this._bounds.x += dx;
+          this._bounds.width -= dx;
+        } else if (name[0] == 'r') {
+          this._bounds.width += dx;
+        }
+        if (name[name.length - 1] == 't') {
+          this._bounds.y += dy;
+          this._bounds.height -= dy;
+        } else if (name[name.length - 1] == 'b') {
+          this._bounds.height += dy;
+        }
+        this._setBounds(this._bounds, true);
+      }
+    }
+  }, {
+    key: "enddrag",
+    value: function enddrag(evt) {
+      if (!this.dragItem) {
+        return;
+      }
+      this.dragItem = false;
+      if (this._bounds.width < 0) {
+        this._bounds.x += this._bounds.width;
+        this._bounds.width = -this._bounds.width;
+      } else if (this._bounds.width == 0) {
+        this._bounds.width = 1;
+      }
+      if (this._bounds.height < 0) {
+        this._bounds.y += this._bounds.height;
+        this._bounds.height = -this._bounds.height;
+      } else if (this._bounds.height == 0) {
+        this._bounds.height = 1;
+      }
+      if (this._bounds.width > this.wholeBounds.width) {
+        this._bounds.width = this.wholeBounds.width;
+      }
+      if (this._bounds.height > this.wholeBounds.height) {
+        this._bounds.height = this.wholeBounds.height;
+      }
+      if (this._bounds.x < 0) {
+        this._bounds.x = 0;
+      }
+      if (this._bounds.y < 0) {
+        this._bounds.y = 0;
+      }
+      if (this._bounds.right > this.wholeBounds.width) {
+        this._bounds.x -= this._bounds.right - this.wholeBounds.width;
+      }
+      if (this._bounds.bottom > this.wholeBounds.height) {
+        this._bounds.y -= this._bounds.bottom - this.wholeBounds.height;
+      }
+
+      this._setBounds(this._bounds, true);
+    }
+  }, {
+    key: "_createDiv",
+    value: function _createDiv(parent) {
+      var div = document.createElement("div");
+      parent.appendChild(div);
+      return div;
+    }
+  }, {
+    key: "_setHandleLocation",
+    value: function _setHandleLocation(handle, x, y) {
+      handle.style.left = x - this.handleSize / 2 + "px";
+      handle.style.top = y - this.handleSize / 2 + "px";
+    }
+  }, {
+    key: "_setBounds",
+    value: function _setBounds(bounds) {
+      if (!bounds.equals(this.wholeBounds)) {
+        this.oldBounds = bounds;
+      }
+      this._bounds = bounds;
+      bounds = bounds.clone();
+      bounds.width += 1;
+      bounds.height += 1;
+      this.boundsDiv.style.left = bounds.x + "px";
+      this.boundsDiv.style.top = bounds.y + "px";
+      this.boundsDiv.style.width = bounds.width + "px";
+      this.boundsDiv.style.height = bounds.height + "px";
+
+      this._setHandleLocation(this.lt, bounds.x, bounds.y);
+      this._setHandleLocation(this.t, bounds.cx, bounds.y);
+      this._setHandleLocation(this.rt, bounds.right, bounds.y);
+      this._setHandleLocation(this.l, bounds.x, bounds.cy);
+      this._setHandleLocation(this.r, bounds.right, bounds.cy);
+      this._setHandleLocation(this.lb, bounds.x, bounds.bottom);
+      this._setHandleLocation(this.b, bounds.cx, bounds.bottom);
+      this._setHandleLocation(this.rb, bounds.right, bounds.bottom);
+      if (this.onBoundsChange) {
+        this.onBoundsChange(this._bounds);
+      }
+    }
+  }, {
+    key: "bounds",
+    get: function get() {
+      return this._bounds;
+    },
+    set: function set(v) {
+      this._setBounds(v);
+    }
+  }]);
+
+  return ResizeBox;
+}();
+
+var ExportPanel = function () {
+  function ExportPanel() {
+    _classCallCheck$1(this, ExportPanel);
+  }
+
+  _createClass$1(ExportPanel, [{
+    key: "_getChild",
+    value: function _getChild(selector) {
+      return this.html.querySelector(selector);
+    }
+  }, {
+    key: "initCanvas",
+    value: function initCanvas() {
+      var export_canvas = this._getChild('.graph-export-panel__export_canvas');
+      export_canvas.innerHTML = "";
+
+      var canvas = T.createCanvas(true);
+      export_canvas.appendChild(canvas);
+      this.canvas = canvas;
+
+      var export_bounds = this._getChild(".graph-export-panel__export_bounds");
+      var export_size = this._getChild(".graph-export-panel__export_size");
+      var clipBounds = void 0;
+      var drawPreview = function drawPreview() {
+        var canvas = this.canvas;
+        var g = canvas.g;
+        var ratio = canvas.ratio || 1;
+        g.save();
+        // g.scale(1/g.ratio, 1/g.ratio);
+        g.clearRect(0, 0, canvas.width, canvas.height);
+        g.drawImage(this.imageInfo.canvas, 0, 0);
+        g.beginPath();
+        g.moveTo(0, 0);
+        g.lineTo(canvas.width, 0);
+        g.lineTo(canvas.width, canvas.height);
+        g.lineTo(0, canvas.height);
+        g.lineTo(0, 0);
+
+        var x = clipBounds.x * ratio;var y = clipBounds.y * ratio;var width = clipBounds.width * ratio;
+        var height = clipBounds.height * ratio;
+        g.moveTo(x, y);
+        g.lineTo(x, y + height);
+        g.lineTo(x + width, y + height);
+        g.lineTo(x + width, y);
+        g.closePath();
+        g.fillStyle = "rgba(0, 0, 0, 0.3)";
+        g.fill();
+        g.restore();
+      };
+      var onBoundsChange = function onBoundsChange(bounds) {
+        clipBounds = bounds;
+        this.clipBounds = clipBounds;
+        drawPreview.call(this);
+        var w = clipBounds.width / this.imageInfo.scale | 0;
+        var h = clipBounds.height / this.imageInfo.scale | 0;
+        export_bounds.textContent = (clipBounds.x / this.imageInfo.scale | 0) + ", " + (clipBounds.y / this.imageInfo.scale | 0) + ", " + w + ", " + h;
+        this.updateOutputSize();
+      };
+      this.updateOutputSize = function () {
+        var export_scale = this._getChild(".graph-export-panel__export_scale");
+        var scale = export_scale.value;
+        var w = clipBounds.width / this.imageInfo.scale * scale | 0;
+        var h = clipBounds.height / this.imageInfo.scale * scale | 0;
+        var info = w + " X " + h;
+        if (w * h > 3000 * 4000) {
+          info += "<span style='color: #F66;'>" + getI18NString('Image size is too large, the export may appear memory error') + "</span>";
+        }
+        export_size.innerHTML = info;
+      };
+      var resizeHandler = new ResizeBox(canvas.parentNode, onBoundsChange.bind(this));
+      this.update = function () {
+        var ratio = this.canvas.ratio || 1;
+        var width = this.imageInfo.width / ratio;
+        var height = this.imageInfo.height / ratio;
+        this.canvas.setSize(width, height);
+        resizeHandler.update(width, height);
+      };
+    }
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      this.graph = null;
+      this.imageInfo = null;
+      this.clipBounds = null;
+      this.bounds = null;
+    }
+  }, {
+    key: "_initDom",
+    value: function _initDom() {
+      var export_panel = this.html = createElement({
+        html: template
+      });
+      export_panel.addEventListener("mousedown", function (evt) {
+        if (evt.target == export_panel) {
+          this.destroy();
+        }
+      }.bind(this), false);
+      var export_scale = this._getChild(".graph-export-panel__export_scale");
+      var export_scale_label = this._getChild(".graph-export-panel__export_scale_label");
+      export_scale.onchange = function (evt) {
+        export_scale_label.textContent = this.scale = export_scale.value;
+        this.updateOutputSize();
+      }.bind(this);
+      this.export_scale = export_scale;
+
+      var export_submit = this._getChild(".graph-export-panel__export_submit");
+      export_submit.onclick = this._doExport.bind(this, 'file');
+      var print_submit = this._getChild(".graph-export-panel__print_submit");
+      print_submit.onclick = this._doExport.bind(this, 'print');
+    }
+  }, {
+    key: "_doExport",
+    value: function _doExport(type) {
+      var scale = this.export_scale.value;
+      var s = this.imageInfo.scale;
+      var clipBounds = new T.Rect(this.clipBounds.x / s, this.clipBounds.y / s, this.clipBounds.width / s, this.clipBounds.height / s);
+      clipBounds.offset(this.bounds.x, this.bounds.y);
+      if (type === 'print') {
+        return printGraph(this.graph, clipBounds, scale);
+      }
+      exportImageFile(this.graph, clipBounds, scale);
+    }
+  }, {
+    key: "show",
+    value: function show(graph) {
+      if (!this.html) {
+        this._initDom();
+      }
+
+      showDialog({
+        content: this.html
+      });
+
+      this.graph = graph;
+      var bounds = graph.bounds;
+      this.bounds = bounds;
+
+      var canvas_size = this._getChild(".graph-export-panel__canvas_size");
+      canvas_size.textContent = (bounds.width | 0) + " X " + (bounds.height | 0);
+
+      var size = Math.min(500, screen.width / 1.3);
+      var imageScale = void 0;
+      if (bounds.width > bounds.height) {
+        imageScale = Math.min(1, size / bounds.width);
+      } else {
+        imageScale = Math.min(1, size / bounds.height);
+      }
+      if (!this.canvas) {
+        this.initCanvas();
+      }
+      this.imageInfo = graph.exportImage(imageScale * this.canvas.ratio);
+      this.imageInfo.scale = imageScale;
+
+      this.update();
+    }
+  }]);
+
+  return ExportPanel;
+}();
+
+var exportPanel = void 0;
+
+function showExportPanel(graph) {
+  if (!exportPanel) {
+    exportPanel = new ExportPanel();
+  }
+  exportPanel.show(graph);
+}
+
+function doPrint(image) {
+  var doc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
+  var win = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : window;
+
+  function __print() {
+    function closePrint() {
+      win.removeEventListener('afterprint', closePrint);
+      doc.body.removeChild(image);
+      image.classList.remove('q-print__body');
+      doc.documentElement.classList.remove('q-print');
+    }
+
+    function showPrint() {
+      doc.documentElement.classList.add('q-print');
+      image.classList.add('q-print__body');
+      doc.body.appendChild(image);
+      win.removeEventListener('beforeprint', showPrint);
+      win.addEventListener('afterprint', closePrint);
+    }
+
+    win.addEventListener('beforeprint', showPrint);
+    win.print();
+    // /ie, edge浏览器不会阻塞，异步调用print
+    // /safari第一次会阻塞进程，但第二次则不会阻塞，会显示是否打印的确认框，如果点击取消，不会进入打印状态
+  }
+
+  if (!image.width) {
+    image.onload = __print;
+  } else {
+    __print();
+  }
+}
+
+function getStyleByID(id) {
+  var doc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
+
+  var style = doc.getElementById(id);
+  if (style && style.sheet) {
+    return style;
+  }
+  style = doc.createElement('style');
+  style.id = id;
+  doc.head.insertBefore(style, doc.head.childNodes[0]);
+  return style;
+}
+
+function initPrintStyle() {
+  var doc = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : document;
+
+  var print_css = "\n@media print {\n    html.q-print, html.q-print > body {\n        margin: 0 !important;\n        box-sizing: border-box !important;\n        height: 100% !important;\n        width: 100% !important;\n        display: flex !important;\n        align-items: center !important;\n    }\n    html.q-print > body > *:not(.q-print__body){\n        display: none !important;\n    }\n}\n.q-print__body {\n    position: absolute;\n    margin: auto;\n    top: 0px;\n    left: 0px;\n    right: 0px;\n    bottom: 0px;\n    max-width: 100%;\n    max-height: 100%;\n    flex: 0 0 auto;\n}";
+  getStyleByID('qunee-styles__print', doc).appendChild(doc.createTextNode(print_css));
+}
+
+initPrintStyle();
+
+function showImageInNewWindow(imageInfo, name, print) {
+  var win = window.open();
+  var doc = win.document;
+  doc.title = name || "export image";
+  doc.body.style.textAlign = "center";
+  doc.body.style.margin = "0px";
+
+  if (print === true) {
+    var style = doc.createElement("style");
+    style.setAttribute("type", "text/css");
+    style.setAttribute("media", "print");
+    var printCSS = "img {max-width: 100%; max-height: 100%;}";
+    if (imageInfo.width / imageInfo.height > 1.2) {
+      printCSS += "\n @page { size: landscape; }";
+    } else {
+      printCSS += "\n @page { size: portrait; }";
+    }
+    style.appendChild(doc.createTextNode(printCSS));
+    doc.head.appendChild(style);
+  }
+
+  var img = doc.createElement("img");
+  var imageStyles = {
+    'max-width': '100%',
+    'max-height': '100%',
+    'position': 'absolute',
+    'margin': 'auto',
+    'top': 0,
+    'left': 0,
+    'right': 0,
+    'bottom': 0
+  };
+  for (var _name in imageStyles) {
+    img.style[_name] = imageStyles[_name];
+  }
+
+  if (print === true) {
+    img.onload = function () {
+      win.print();
+      win.close();
+    };
+  }
+  img.src = imageInfo.data;
+  doc.body.appendChild(img);
+}
+
+function printGraph(graph, bounds, scale) {
+  var imageInfo = exportImageInfo(graph, bounds, scale);
+  var img = document.createElement("img");
+  img.src = imageInfo.data;
+  doPrint(img);
+}
+
+function exportImageFile(graph, bounds, scale) {
+  var name = graph.name || 'graph';
+  var imageInfo = exportImageInfo(graph, bounds, scale);
+  if (!isBlobSupported()) {
+    return showImageInNewWindow(imageInfo, name);
+  }
+  saveImage(imageInfo, name);
+}
+
+var maxLength = 32767;var maxSize = 16384 * 16384;
+
+function isImageTooBig(width, height) {
+  return (T.isFirefox || T.isChrome) && width >= maxLength || height >= maxLength || width * height >= maxSize;
+}
+
+function exportImageInfo(graph, bounds, scale) {
+  scale = parseFloat(scale) || 1;
+  var width = Math.ceil(bounds.width * scale);
+  var height = Math.ceil(bounds.height * scale);
+
+  if (!isImageTooBig(width, height)) {
+    return graph.exportImage(scale, bounds);
+  }
+
+  // 图片太大，超过<canvas>支持尺寸
+  var hCount = Math.ceil((width + 1) / maxLength);
+  var vCount = Math.ceil((height + 1) / maxLength);
+  var minCells = Math.ceil((width * height + 1) / maxSize);
+  if (minCells > hCount * vCount) {
+    if (width > height) {
+      hCount = Math.ceil(minCells / vCount);
+    } else {
+      vCount = Math.ceil(minCells / hCount);
+    }
+  }
+  var cellWidth = Math.ceil(width / hCount);var cellHeight = Math.ceil(height / vCount);
+
+  function toImage(x, y) {
+    var perWidth = cellWidth / scale;var perHeight = cellHeight / scale;
+    return graph.exportImage(scale, new T.Rect(bounds.x + x * perWidth, bounds.y + y * perHeight, perWidth, perHeight));
+  }
+
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"' + ' width="' + width + '" height="' + height + '">';
+  var x = 0;
+  while (x < hCount) {
+    var y = 0;
+    while (y < vCount) {
+      var imageInfo = toImage(x, y);
+      svg += '<image x="' + x * cellWidth + '" y = "' + y * cellHeight + '" width="' + imageInfo.width + '" height="' + imageInfo.height + '" ' + 'xlink:href="' + imageInfo.data + '" />';
+      y++;
+    }
+    x++;
+  }
+  svg += '</svg>';
+  return {
+    width: width,
+    height: height,
+    data: 'data:image/svg+xml, ' + svg,
+    svg: svg
+  };
+}
+
+function saveImage(imageInfo, name) {
+  if (imageInfo.svg) {
+    return saveSVG(imageInfo.svg, name);
+  }
+  saveCanvas(imageInfo.canvas, name);
+}
+
+function saveSVG(svg, name) {
+  svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + svg;
+  var blob = new Blob([svg], { type: "image/svg+xml" });
+  saveAs(blob, name + ".svg");
+}
+
+function saveCanvas(canvas, name) {
+  var type = "image/png";
+  name += '.png';
+  if (canvas.toBlob) {
+    return canvas.toBlob(function (blob) {
+      saveAs(blob, name);
+    }, type);
+  }
+
+  var binStr = atob(canvas.toDataURL(type).split(',')[1]);
+  var len = binStr.length;var arr = new Uint8Array(len);
+
+  for (var i = 0; i < len; i++) {
+    arr[i] = binStr.charCodeAt(i);
+  }
+  saveAs(new Blob([arr], { type: type }), name);
+}
+
+var mgtpl = { TK: TK, Overview: Overview, showExportPanel: showExportPanel };
 
 export default mgtpl;
