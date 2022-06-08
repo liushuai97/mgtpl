@@ -16771,7 +16771,650 @@ function saveCanvas(canvas, name) {
   saveAs(new Blob([arr], { type: type }), name);
 }
 
-var mgtpl = { TK: TK, Overview: Overview, showExportPanel: showExportPanel };
+/* eslint-disable  */
+function isEmptyObject(obj) {
+  if (!(obj instanceof Object)) {
+    return !obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj.length === 0;
+  }
+  for (var key in obj) {
+    return false;
+  }
+  return true;
+}
+
+function getByPath(pathName, scope) {
+  var paths = pathName.split('.');
+  if (!scope) {
+    if (paths[0] === 'Q') {
+      scope = Q;
+      paths.shift();
+    } else {
+      scope = window;
+    }
+  }
+  var i = -1;
+  while (scope && ++i < paths.length) {
+    var path = paths[i];
+    scope = scope[path];
+  }
+  return scope;
+}
+
+function loadClassPath(object, namespace, loadChild) {
+  object._classPath = namespace;
+  if (object instanceof Function) {
+    object.prototype._className = object._classPath;
+    object.prototype._class = object;
+    //            T.log(v._className);
+    //            continue;
+  }
+  if (loadChild === false) {
+    return;
+  }
+  for (var name in object) {
+    if (name[0] === '_' || name[0] === '$' || name === 'superclass' || name === 'constructor' || name === 'prototype' || name.indexOf('.') >= 0) {
+      continue;
+    }
+    var v = object[name];
+    if (!v || !(v instanceof Object) || v._classPath) {
+      continue;
+    }
+    loadClassPath(v, namespace + '.' + name);
+  }
+}
+
+var prototypes = {};
+
+function getPrototype(data) {
+  var className = data._className;
+  if (!className) {
+    return null;
+  }
+  var prototype = prototypes[className];
+  if (!prototype) {
+    var clazz = data._class;
+    // eslint-disable-next-line new-cap
+    prototype = prototypes[className] = new clazz();
+  }
+  return prototype;
+}
+
+function equals(a, b) {
+  return a === b || a && b && a.equals && a.equals(b);
+}
+
+T.HashList.prototype.toJSON = function (serializer) {
+  var datas = [];
+  this.forEach(function (data) {
+    datas.push(serializer.toJSON(data));
+  });
+  return datas;
+};
+
+T.HashList.prototype.parseJSON = function (json, serializer) {
+  var result = [];
+  json.forEach(function (item) {
+    var data = serializer.parseJSON(item);
+    this.add(data);
+    result.push(data);
+  }, this);
+  return result;
+};
+
+function exportElementProperties(serializer, properties, info, element) {
+  var prototype = getPrototype(element);
+  properties.forEach(function (name) {
+    var value = element[name];
+    if (!equals(value, prototype[name])) {
+      var json = serializer.toJSON(value);
+      if (json || !value) {
+        info[name] = json;
+      }
+    }
+  }, element);
+}
+
+function exportProperties(serializer, properties) {
+  var info = void 0;
+  for (var s in properties) {
+    if (!info) {
+      info = {};
+    }
+    info[s] = serializer.toJSON(properties[s]);
+  }
+  return info;
+}
+
+var wirtableUIProperties = {
+  class: false,
+  id: false,
+  "fillGradient": false,
+  "syncSelectionStyles": false,
+  "originalBounds": false,
+  "parent": false,
+  "font": false,
+  "$data": false,
+  "$x": false,
+  "$y": false
+};
+
+T.BaseUI.prototype.toJSON = function (serializer) {
+  var this$1 = this;
+
+  var json = {};
+  for (var name in this$1) {
+    if (name[0] === '_' || name[0] === '$' && name[1] === '_' || name.indexOf('$invalidate') === 0 || wirtableUIProperties[name] === false) {
+      continue;
+    }
+    var value = this$1[name];
+    if (value instanceof Function || value === this$1.class.prototype[name]) {
+      continue;
+    }
+    // wirtableUIProperties[name] = true;
+
+    try {
+      json[name] = serializer.toJSON(value);
+    } catch (error) {}
+  }
+  return json;
+};
+// new T.ImageUI().toJSON();
+// new T.LabelUI().toJSON();
+// T.log(JSON.stringify(wirtableUIProperties))
+
+T.BaseUI.prototype.parseJSON = function (info, serializer) {
+  var this$1 = this;
+
+  for (var name in info) {
+    var v = serializer.parseJSON(info[name]);
+    this$1[name] = v;
+  }
+};
+
+var OUTPUT_PROPERTIES = ['userId', 'rotatable', 'editable', 'layoutable', 'visible', 'busLayout', 'enableSubNetwork', 'zIndex', 'tooltipType', 'tooltip', 'movable', 'selectable', 'resizable', 'uiClass', 'name', 'parent', 'host'];
+
+T.Element.prototype.addOutProperty = function (name) {
+  if (!this.outputProperties) {
+    this.outputProperties = [];
+  }
+  this.outputProperties.push(name);
+};
+T.Element.prototype.removeOutProperty = function (name) {
+  if (this.outputProperties) {
+    var index = this.outputProperties.indexOf(name);
+    if (index >= 0) {
+      this.outputProperties.splice(index, 1);
+    }
+  }
+};
+T.Element.prototype.toJSON = function (serializer) {
+  var info = {};
+  var outputProperties = OUTPUT_PROPERTIES;
+  if (this.outputProperties) {
+    outputProperties = outputProperties.concat(this.outputProperties);
+  }
+  exportElementProperties(serializer, outputProperties, info, this);
+  if (this.styles) {
+    var styles = exportProperties(serializer, this.styles);
+    if (styles) {
+      info.styles = styles;
+    }
+  }
+  if (this.properties) {
+    var properties = exportProperties(serializer, this.properties);
+    if (properties) {
+      info.properties = properties;
+    }
+  }
+  var bindingUIs = this.bindingUIs;
+  if (bindingUIs) {
+    var bindingJSONs = [];
+    // let binding = {id: ui.id, ui: ui, bindingProperties: bindingProperties};
+    bindingUIs.forEach(function (binding) {
+      if (binding.ui.serializable === false) {
+        return;
+      }
+      var uiJSON = serializer.toJSON(binding.ui);
+      bindingJSONs.push({
+        ui: uiJSON,
+        bindingProperties: binding.bindingProperties
+      });
+    });
+    info.bindingUIs = bindingJSONs;
+  }
+  return info;
+};
+T.Element.prototype.parseJSON = function (info, serializer) {
+  var this$1 = this;
+
+  if (info.styles) {
+    var styles = {};
+    for (var n in info.styles) {
+      styles[n] = serializer.parseJSON(info.styles[n]);
+    }
+    this.putStyles(styles, true);
+    // delete info.styles;
+  }
+  if (info.properties) {
+    var properties = {};
+    for (var _n in info.properties) {
+      properties[_n] = serializer.parseJSON(info.properties[_n]);
+    }
+    this.properties = properties;
+  }
+  if (info.bindingUIs) {
+    info.bindingUIs.forEach(function (binding) {
+      var ui = serializer.parseJSON(binding.ui);
+      if (!ui) {
+        return;
+      }
+      this.addUI(ui, binding.bindingProperties);
+
+      // let circle = new T.ImageUI(ui.data);
+      // circle.lineWidth = 2;
+      // circle.strokeStyle = '#ff9f00';
+      // this.addUI(circle);
+    }, this);
+  }
+  for (var _n2 in info) {
+    if (_n2 === 'id' || _n2 === 'styles' || _n2 === 'properties' || _n2 === 'bindingUIs') {
+      continue;
+    }
+    var v = serializer.parseJSON(info[_n2]);
+    this$1[_n2] = v;
+  }
+};
+T.Node.prototype.toJSON = function (serializer) {
+  var info = T.doSuper(this, T.Node, 'toJSON', arguments);
+  exportElementProperties(serializer, ['location', 'size', 'image', 'rotate', 'anchorPosition', 'parentChildrenDirection', 'layoutType', 'hGap', 'vGap'], info, this);
+  return info;
+};
+T.Group.prototype.toJSON = function (serializer) {
+  var info = T.doSuper(this, T.Group, 'toJSON', arguments);
+  exportElementProperties(serializer, ['minSize', 'groupType', 'padding', 'groupImage', 'expanded'], info, this);
+  return info;
+};
+T.ShapeNode.prototype.toJSON = function (serializer) {
+  var info = T.doSuper(this, T.Node, 'toJSON', arguments);
+  exportElementProperties(serializer, ['location', 'rotate', 'anchorPosition', 'path'], info, this);
+  return info;
+};
+T.Edge.prototype.toJSON = function (serializer) {
+  var info = T.doSuper(this, T.Edge, 'toJSON', arguments);
+  exportElementProperties(serializer, ['angle', 'from', 'to', 'edgeType', 'angle', 'bundleEnabled', 'pathSegments'], info, this);
+  return info;
+};
+
+function JSONSerializer(options) {
+  if (options) {
+    this.withGlobalRefs = options.withGlobalRefs !== false;
+  }
+  this.reset();
+}
+
+JSONSerializer.prototype = {
+  _refs: null,
+  _refValues: null,
+  _index: 1,
+  root: null,
+  reset: function reset() {
+    this._globalRefs = {};
+    this._elementRefs = {};
+    this._refs = {};
+    this._refValues = {};
+    this._index = 1;
+  },
+  getREF: function getREF(id) {
+    return this._refs[id];
+  },
+  clearRef: function clearRef() {
+    var this$1 = this;
+
+    for (var id in this$1._globalRefs) {
+      delete this$1._globalRefs[id]._value;
+    }
+    for (var _id in this$1._refValues) {
+      delete this$1._refValues[_id]._refId;
+    }
+    this.reset();
+  },
+  elementToJSON: function elementToJSON(element) {
+    return this._toJSON(element);
+  },
+  _elementRefs: null,
+  _globalRefs: null,
+  withGlobalRefs: true,
+  toJSON: function toJSON(value) {
+    if (!(value instanceof Object)) {
+      return value;
+    }
+    if (value instanceof Function && !value._classPath) {
+      return null;
+    }
+    if (!this.withGlobalRefs) {
+      return this._toJSON(value);
+    }
+    if (value instanceof T.Element) {
+      var _id2 = getElementId(value);
+      this._elementRefs[_id2] = true;
+      return { _ref: _id2 };
+    }
+    if (value._refId === undefined) {
+      var json = this._toJSON(value);
+      if (!json) {
+        return json;
+      }
+      // 添加引用标记，下次遇到这个对象时，不需要再toJSON，而是直接输出引用，比如{"$ref": 1}
+      var _id3 = value._refId = this._index++;
+      // 将对象暂时存放在_refValues中，以便在导出完成后，删除掉上一步对value增加的_refId属性
+      this._refValues[_id3] = value;
+      this._refs[_id3] = json;
+      return json;
+    }
+    // 遇到相同的对象，将对象信息存放到全局map，网元属性只需要存放引用id，比如{"$ref": 1}
+    // 全局map中存放在g属性中，以id为key，json为value，如下：
+    // "refs": {
+    //  "1": {
+    //    "_classPath": "T.Position.LEFT_BOTTOM"
+    //  }
+    // },
+    // "datas": [
+    //  {
+    //    "_className": "T.Node",
+    //    "json": {
+    //      "name": "A",
+    //      "styles": {
+    //        "property": {
+    //          "$ref": 1
+    //        }
+    //      },
+    var id = value._refId;
+    if (!this._globalRefs[id]) {
+      // 如果还没有加入到全局引用区，则将json放入到_globalRefs，同时将原来的json变成引用方式
+      var _json = this._refs[id];
+      if (!_json) {
+        return _json;
+      }
+      var clone = {};
+      for (var name in _json) {
+        clone[name] = _json[name];
+        delete _json[name];
+      }
+      _json.$ref = id;
+      this._globalRefs[id] = clone;
+    }
+    return { $ref: id };
+  },
+  _toJSON: function _toJSON(value) {
+    var this$1 = this;
+
+    if (value._classPath) {
+      return { _classPath: value._classPath };
+    }
+    var json = void 0;
+    if (!value._className) {
+      if (T.isArray(value)) {
+        json = [];
+        value.forEach(function (v) {
+          json.push(this.toJSON(v));
+        }, this);
+        return json;
+      } else {
+        json = {};
+        var prototype = void 0;
+        if (value.class) {
+          prototype = value.class.prototype;
+        }
+        for (var name in value) {
+          var v = value[name];
+          if (v instanceof Function || prototype && v === prototype[name]) {
+            continue;
+          }
+          json[name] = this$1.toJSON(value[name]);
+        }
+        return json;
+      }
+
+      // eslint-disable-next-line no-unreachable
+      return value;
+    }
+    var result = { _className: value._className };
+    if (value.toJSON) {
+      result.json = value.toJSON(this);
+    } else {
+      result.json = value;
+    }
+    return result;
+  },
+  jsonToElement: function jsonToElement(json) {
+    // 如果之前解析的数据中引用到了此节点，此节点其实已经被解析了，这里只需要返回引用就可以了
+    if (json._refId !== undefined && json._refId in this._refs) {
+      return this._refs[json._refId];
+    }
+    return this._parseJSON(json);
+  },
+  parseJSON: function parseJSON(json) {
+    if (!(json instanceof Object)) {
+      return json;
+    }
+    if (!this.withGlobalRefs) {
+      return this._parseJSON(json);
+    }
+    // 全局引用
+    if (json.$ref !== undefined) {
+      // 从全局引用中获取json信息
+      var gJson = this._globalRefs[json.$ref];
+      if (!gJson) {
+        return;
+      }
+      // 将json信息解析成对象，并缓存在json的_value属性中
+      if (gJson._value === undefined) {
+        gJson._value = this.parseJSON(gJson);
+      }
+      return gJson._value;
+    }
+    // 如果属性为element引用，先从_elementRefs中找到对应element的json信息，然后将此json信息解析成element
+    if (json._ref !== undefined) {
+      var elementJson = this._elementRefs[json._ref];
+      if (!elementJson) {
+        return;
+      }
+      return this.jsonToElement(elementJson);
+    }
+    // //如果json包含_refId属性，说明这是一个element类型，直接调用jsonToElement，不过应该不会出现
+    // if (json._refId !=== undefined) {
+    //  return this.jsonToElement(json);
+    // }
+    return this._parseJSON(json);
+  },
+  _parseJSON: function _parseJSON(json) {
+    var this$1 = this;
+
+    if (!(json instanceof Object)) {
+      return json;
+    }
+    if (json._classPath) {
+      return getByPath(json._classPath);
+    }
+    if (json._className) {
+      var F = getByPath(json._className);
+      var v = new F();
+      // /防止相互引用导致的问题
+      if (this.withGlobalRefs && json._refId !== undefined) {
+        this._refs[json._refId] = v;
+      }
+      if (v && json.json) {
+        json = json.json;
+        if (v.parseJSON) {
+          v.parseJSON(json, this);
+        } else {
+          for (var n in json) {
+            v[n] = json[n];
+          }
+        }
+      }
+      return v;
+    }
+    if (T.isArray(json)) {
+      var _result = [];
+      json.forEach(function (j) {
+        _result.push(this.parseJSON(j));
+      }, this);
+      return _result;
+    }
+    var result = {};
+    for (var name in json) {
+      result[name] = this$1.parseJSON(json[name]);
+    }
+    return result;
+  }
+};
+
+function getElementId(element) {
+  return element.userId || element.id;
+}
+
+function graphModelToJSON(model, filter) {
+  var serializer = new JSONSerializer();
+  var json = {
+    version: '2.0',
+    refs: {}
+  };
+  var datas = [];
+  var map = {};
+  if (model.currentSubNetwork) {
+    var elementJson = serializer.elementToJSON(model.currentSubNetwork);
+    if (elementJson) {
+      json.currentSubNetwork = { _ref: elementJson._refId = model.currentSubNetwork.id };
+    }
+  }
+  model.forEach(function (d) {
+    if (filter && filter(d) === false) {
+      return;
+    }
+    var elementJson = serializer.elementToJSON(d);
+    if (elementJson) {
+      datas.push(elementJson);
+      map[getElementId(d)] = elementJson;
+    }
+  });
+  if (serializer._elementRefs) {
+    for (var id in serializer._elementRefs) {
+      map[id]._refId = id;
+    }
+  }
+  if (serializer._globalRefs) {
+    json.refs = serializer._globalRefs;
+  }
+  serializer.clearRef();
+
+  json.datas = datas;
+  for (var name in json) {
+    if (isEmptyObject(json[name])) {
+      delete json[name];
+    }
+  }
+  return json;
+}
+
+T.GraphModel.prototype.toJSON = function (filter) {
+  return graphModelToJSON(this, filter);
+};
+
+T.GraphModel.prototype.parseJSON = function (json, options) {
+  options = options || {};
+  var datas = json.datas;
+  if (!datas || !(datas.length > 0)) {
+    return;
+  }
+  var result = [];
+  var serializer = new JSONSerializer(options, json.g);
+  var elementRefs = {};
+  datas.forEach(function (info) {
+    if (info._refId) {
+      elementRefs[info._refId] = info;
+    }
+  });
+  serializer._globalRefs = json.refs || {};
+  serializer._elementRefs = elementRefs;
+
+  datas.forEach(function (json) {
+    var element = serializer.jsonToElement(json);
+    if (element instanceof T.Element) {
+      result.push(element);
+      this.add(element);
+    }
+  }, this);
+
+  if (this.currentSubNetwork) {
+    var currentSubNetwork = this.currentSubNetwork;
+    result.forEach(function (e) {
+      if (!e.parent) {
+        e.parent = currentSubNetwork;
+      }
+    });
+  }
+
+  if (json.currentSubNetwork) {
+    var _currentSubNetwork = serializer.getREF(json.currentSubNetwork._ref);
+    if (_currentSubNetwork) {
+      this.currentSubNetwork = _currentSubNetwork;
+    }
+  }
+  serializer.clearRef();
+  return result;
+};
+
+T.Graph.prototype.toJSON = T.Graph.prototype.exportJSON = function (toString, options) {
+  options = options || {};
+  var json = this.graphModel.toJSON(options.filter);
+  json.scale = this.scale;
+  json.tx = this.tx;
+  json.ty = this.ty;
+  if (toString) {
+    json = JSON.stringify(json, options.replacer, options.space || '\t');
+  }
+  return json;
+};
+T.Graph.prototype.parseJSON = function (json, options) {
+  if (T.isString(json)) {
+    json = JSON.parse(json);
+  }
+  options = options || {};
+  var result = this.graphModel.parseJSON(json, options);
+  var scale = json.scale;
+  if (scale && options.transform !== false) {
+    this.originAtCenter = false;
+    this.translateTo(json.tx || 0, json.ty || 0, scale);
+  }
+  return result;
+};
+
+loadClassPath(Q, 'Q');
+T.loadClassPath = loadClassPath;
+
+function exportJSON(object, toString) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+  if (object.exportJSON) {
+    return object.exportJSON(toString, options);
+  }
+  var json = new JSONSerializer({ withGlobalRefs: false }).toJSON(object);
+  if (toString) {
+    return JSON.stringify(json, options.replacer, options.space || '\t');
+  }
+  return json;
+}
+
+var mgtpl = {
+  TK: TK,
+  Overview: Overview,
+  showExportPanel: showExportPanel,
+  exportJSON: exportJSON
+};
 
 return mgtpl;
 
