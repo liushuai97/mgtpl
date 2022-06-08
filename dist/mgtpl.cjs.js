@@ -16767,7 +16767,7 @@ function saveCanvas(canvas, name) {
   saveAs(new Blob([arr], { type: type }), name);
 }
 
-/* eslint-disable  */
+/* eslint-disable */
 function isEmptyObject(obj) {
   if (!(obj instanceof Object)) {
     return !obj;
@@ -16804,7 +16804,7 @@ function loadClassPath(object, namespace, loadChild) {
   if (object instanceof Function) {
     object.prototype._className = object._classPath;
     object.prototype._class = object;
-    //            T.log(v._className);
+    //            Q.log(v._className);
     //            continue;
   }
   if (loadChild === false) {
@@ -16917,9 +16917,9 @@ T.BaseUI.prototype.toJSON = function (serializer) {
   }
   return json;
 };
-// new T.ImageUI().toJSON();
-// new T.LabelUI().toJSON();
-// T.log(JSON.stringify(wirtableUIProperties))
+// new Q.ImageUI().toJSON();
+// new Q.LabelUI().toJSON();
+// Q.log(JSON.stringify(wirtableUIProperties))
 
 T.BaseUI.prototype.parseJSON = function (info, serializer) {
   var this$1 = this;
@@ -17009,7 +17009,7 @@ T.Element.prototype.parseJSON = function (info, serializer) {
       }
       this.addUI(ui, binding.bindingProperties);
 
-      // let circle = new T.ImageUI(ui.data);
+      // let circle = new Q.ImageUI(ui.data);
       // circle.lineWidth = 2;
       // circle.strokeStyle = '#ff9f00';
       // this.addUI(circle);
@@ -17114,12 +17114,12 @@ JSONSerializer.prototype = {
     // 全局map中存放在g属性中，以id为key，json为value，如下：
     // "refs": {
     //  "1": {
-    //    "_classPath": "T.Position.LEFT_BOTTOM"
+    //    "_classPath": "Q.Position.LEFT_BOTTOM"
     //  }
     // },
     // "datas": [
     //  {
-    //    "_className": "T.Node",
+    //    "_className": "Q.Node",
     //    "json": {
     //      "name": "A",
     //      "styles": {

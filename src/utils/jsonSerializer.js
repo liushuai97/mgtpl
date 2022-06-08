@@ -1,5 +1,5 @@
-/* eslint-disable  */
-import T from '../lib/index.js';
+/* eslint-disable */
+import Q from '../lib/index.js';
 
 function isEmptyObject (obj) {
   if (!(obj instanceof Object)) {
@@ -18,7 +18,7 @@ function getByPath (pathName, scope) {
   let paths = pathName.split('.');
   if (!scope) {
     if (paths[0] === 'Q') {
-      scope = T;
+      scope = Q;
       paths.shift();
     } else {
       scope = window;
@@ -37,7 +37,7 @@ function loadClassPath (object, namespace, loadChild) {
   if (object instanceof Function) {
     object.prototype._className = object._classPath;
     object.prototype._class = object;
-    //            T.log(v._className);
+    //            Q.log(v._className);
     //            continue;
   }
   if (loadChild === false) {
@@ -75,7 +75,7 @@ function equals (a, b) {
   return a === b || (a && b && a.equals && a.equals(b));
 }
 
-T.HashList.prototype.toJSON = function(serializer) {
+Q.HashList.prototype.toJSON = function(serializer) {
   let datas = [];
   this.forEach(function(data) {
     datas.push(serializer.toJSON(data));
@@ -83,7 +83,7 @@ T.HashList.prototype.toJSON = function(serializer) {
   return datas;
 };
 
-T.HashList.prototype.parseJSON = function(json, serializer) {
+Q.HashList.prototype.parseJSON = function(json, serializer) {
   let result = [];
   json.forEach(function(item) {
     let data = serializer.parseJSON(item);
@@ -130,7 +130,7 @@ let wirtableUIProperties = {
   "$y": false
 };
 
-T.BaseUI.prototype.toJSON = function(serializer) {
+Q.BaseUI.prototype.toJSON = function(serializer) {
   let json = {};
   for (let name in this) {
     if (name[0] === '_' || (name[0] === '$' && name[1] === '_') || (name.indexOf('$invalidate') === 0) || wirtableUIProperties[name] === false) {
@@ -150,11 +150,11 @@ T.BaseUI.prototype.toJSON = function(serializer) {
   }
   return json;
 };
-// new T.ImageUI().toJSON();
-// new T.LabelUI().toJSON();
-// T.log(JSON.stringify(wirtableUIProperties))
+// new Q.ImageUI().toJSON();
+// new Q.LabelUI().toJSON();
+// Q.log(JSON.stringify(wirtableUIProperties))
 
-T.BaseUI.prototype.parseJSON = function(info, serializer) {
+Q.BaseUI.prototype.parseJSON = function(info, serializer) {
   for (let name in info) {
     let v = serializer.parseJSON(info[name]);
     this[name] = v;
@@ -163,13 +163,13 @@ T.BaseUI.prototype.parseJSON = function(info, serializer) {
 
 let OUTPUT_PROPERTIES = ['userId', 'rotatable', 'editable', 'layoutable', 'visible', 'busLayout', 'enableSubNetwork', 'zIndex', 'tooltipType', 'tooltip', 'movable', 'selectable', 'resizable', 'uiClass', 'name', 'parent', 'host'];
 
-T.Element.prototype.addOutProperty = function(name) {
+Q.Element.prototype.addOutProperty = function(name) {
   if (!this.outputProperties) {
     this.outputProperties = [];
   }
   this.outputProperties.push(name);
 };
-T.Element.prototype.removeOutProperty = function(name) {
+Q.Element.prototype.removeOutProperty = function(name) {
   if (this.outputProperties) {
     let index = this.outputProperties.indexOf(name);
     if (index >= 0) {
@@ -177,7 +177,7 @@ T.Element.prototype.removeOutProperty = function(name) {
     }
   }
 };
-T.Element.prototype.toJSON = function(serializer) {
+Q.Element.prototype.toJSON = function(serializer) {
   let info = {};
   let outputProperties = OUTPUT_PROPERTIES;
   if (this.outputProperties) {
@@ -214,7 +214,7 @@ T.Element.prototype.toJSON = function(serializer) {
   }
   return info;
 };
-T.Element.prototype.parseJSON = function(info, serializer) {
+Q.Element.prototype.parseJSON = function(info, serializer) {
   if (info.styles) {
     let styles = {};
     for (let n in info.styles) {
@@ -238,7 +238,7 @@ T.Element.prototype.parseJSON = function(info, serializer) {
       }
       this.addUI(ui, binding.bindingProperties);
 
-      // let circle = new T.ImageUI(ui.data);
+      // let circle = new Q.ImageUI(ui.data);
       // circle.lineWidth = 2;
       // circle.strokeStyle = '#ff9f00';
       // this.addUI(circle);
@@ -252,23 +252,23 @@ T.Element.prototype.parseJSON = function(info, serializer) {
     this[n] = v;
   }
 };
-T.Node.prototype.toJSON = function(serializer) {
-  let info = T.doSuper(this, T.Node, 'toJSON', arguments);
+Q.Node.prototype.toJSON = function(serializer) {
+  let info = Q.doSuper(this, Q.Node, 'toJSON', arguments);
   exportElementProperties(serializer, ['location', 'size', 'image', 'rotate', 'anchorPosition', 'parentChildrenDirection', 'layoutType', 'hGap', 'vGap'], info, this);
   return info;
 };
-T.Group.prototype.toJSON = function(serializer) {
-  let info = T.doSuper(this, T.Group, 'toJSON', arguments);
+Q.Group.prototype.toJSON = function(serializer) {
+  let info = Q.doSuper(this, Q.Group, 'toJSON', arguments);
   exportElementProperties(serializer, ['minSize', 'groupType', 'padding', 'groupImage', 'expanded'], info, this);
   return info;
 };
-T.ShapeNode.prototype.toJSON = function(serializer) {
-  let info = T.doSuper(this, T.Node, 'toJSON', arguments);
+Q.ShapeNode.prototype.toJSON = function(serializer) {
+  let info = Q.doSuper(this, Q.Node, 'toJSON', arguments);
   exportElementProperties(serializer, ['location', 'rotate', 'anchorPosition', 'path'], info, this);
   return info;
 };
-T.Edge.prototype.toJSON = function(serializer) {
-  let info = T.doSuper(this, T.Edge, 'toJSON', arguments);
+Q.Edge.prototype.toJSON = function(serializer) {
+  let info = Q.doSuper(this, Q.Edge, 'toJSON', arguments);
   exportElementProperties(serializer, ['angle', 'from', 'to', 'edgeType', 'angle', 'bundleEnabled', 'pathSegments'], info, this);
   return info;
 };
@@ -320,7 +320,7 @@ JSONSerializer.prototype = {
     if (!this.withGlobalRefs) {
       return this._toJSON(value);
     }
-    if (value instanceof T.Element) {
+    if (value instanceof Q.Element) {
       let id = getElementId(value);
       this._elementRefs[id] = true;
       return { _ref: id };
@@ -341,12 +341,12 @@ JSONSerializer.prototype = {
     // 全局map中存放在g属性中，以id为key，json为value，如下：
     // "refs": {
     //  "1": {
-    //    "_classPath": "T.Position.LEFT_BOTTOM"
+    //    "_classPath": "Q.Position.LEFT_BOTTOM"
     //  }
     // },
     // "datas": [
     //  {
-    //    "_className": "T.Node",
+    //    "_className": "Q.Node",
     //    "json": {
     //      "name": "A",
     //      "styles": {
@@ -377,7 +377,7 @@ JSONSerializer.prototype = {
     }
     let json;
     if (!value._className) {
-      if (T.isArray(value)) {
+      if (Q.isArray(value)) {
         json = [];
         value.forEach(function(v) {
           json.push(this.toJSON(v));
@@ -477,7 +477,7 @@ JSONSerializer.prototype = {
       }
       return v;
     }
-    if (T.isArray(json)) {
+    if (Q.isArray(json)) {
       let result = [];
       json.forEach(function(j) {
         result.push(this.parseJSON(j));
@@ -539,7 +539,7 @@ function graphModelToJSON (model, filter) {
   return json;
 }
 
-T.GraphModel.prototype.toJSON = function(filter) {
+Q.GraphModel.prototype.toJSON = function(filter) {
   return graphModelToJSON(this, filter);
 };
 
@@ -553,7 +553,7 @@ function versionToNumber (version) {
   return parseFloat(version);
 }
 
-T.GraphModel.prototype.parseJSON = function(json, options) {
+Q.GraphModel.prototype.parseJSON = function(json, options) {
   options = options || {};
   let datas = json.datas;
   if (!datas || !(datas.length > 0)) {
@@ -572,7 +572,7 @@ T.GraphModel.prototype.parseJSON = function(json, options) {
 
   datas.forEach(function(json) {
     let element = serializer.jsonToElement(json);
-    if (element instanceof T.Element) {
+    if (element instanceof Q.Element) {
       result.push(element);
       this.add(element);
     }
@@ -597,7 +597,7 @@ T.GraphModel.prototype.parseJSON = function(json, options) {
   return result;
 };
 
-T.Graph.prototype.toJSON = T.Graph.prototype.exportJSON = function(toString, options) {
+Q.Graph.prototype.toJSON = Q.Graph.prototype.exportJSON = function(toString, options) {
   options = options || {};
   let json = this.graphModel.toJSON(options.filter);
   json.scale = this.scale;
@@ -608,8 +608,8 @@ T.Graph.prototype.toJSON = T.Graph.prototype.exportJSON = function(toString, opt
   }
   return json;
 };
-T.Graph.prototype.parseJSON = function(json, options) {
-  if (T.isString(json)) {
+Q.Graph.prototype.parseJSON = function(json, options) {
+  if (Q.isString(json)) {
     json = JSON.parse(json);
   }
   options = options || {};
@@ -622,8 +622,8 @@ T.Graph.prototype.parseJSON = function(json, options) {
   return result;
 };
 
-loadClassPath(T, 'Q');
-T.loadClassPath = loadClassPath;
+loadClassPath(Q, 'Q');
+Q.loadClassPath = loadClassPath;
 
 export function exportJSON (object, toString, options = {}) {
   if (object.exportJSON) {
@@ -636,7 +636,7 @@ export function exportJSON (object, toString, options = {}) {
   return json;
 }
 export function parseJSON (json, graph) {
-  if (T.isString(json)) {
+  if (Q.isString(json)) {
     json = JSON.parse(json);
   }
   if (graph && graph.parseJSON) {
