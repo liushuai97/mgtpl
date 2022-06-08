@@ -18,7 +18,7 @@ function getByPath (pathName, scope) {
   let paths = pathName.split('.');
   if (!scope) {
     if (paths[0] === 'Q') {
-      scope = Q;
+      scope = T;
       paths.shift();
     } else {
       scope = window;
@@ -622,7 +622,7 @@ T.Graph.prototype.parseJSON = function(json, options) {
   return result;
 };
 
-loadClassPath(Q, 'Q');
+loadClassPath(T, 'Q');
 T.loadClassPath = loadClassPath;
 
 export function exportJSON (object, toString, options = {}) {

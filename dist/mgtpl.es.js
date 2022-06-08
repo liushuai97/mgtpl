@@ -16783,7 +16783,7 @@ function getByPath(pathName, scope) {
   var paths = pathName.split('.');
   if (!scope) {
     if (paths[0] === 'Q') {
-      scope = Q;
+      scope = T;
       paths.shift();
     } else {
       scope = window;
@@ -17387,7 +17387,7 @@ T.Graph.prototype.parseJSON = function (json, options) {
   return result;
 };
 
-loadClassPath(Q, 'Q');
+loadClassPath(T, 'Q');
 T.loadClassPath = loadClassPath;
 
 function exportJSON(object, toString) {
