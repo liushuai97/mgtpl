@@ -17401,7 +17401,7 @@ function exportJSON(object, toString) {
 }
 
 var mgtpl = {
-  TK: TK,
+  T: T,
   Overview: Overview,
   showExportPanel: showExportPanel,
   exportJSON: exportJSON

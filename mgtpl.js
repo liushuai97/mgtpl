@@ -1,10 +1,10 @@
-import TK from './src/utils/topology.js';
+import T from './src/lib/index.js';
 import { Overview } from './src/utils/overView.js';
 import { showExportPanel } from "./src/utils/exportPane.js";
 import { exportJSON } from "./src/utils/jsonSerializer.js";
 
 export default {
-  TK,
+  T,
   Overview,
   showExportPanel,
   exportJSON,
