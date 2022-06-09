@@ -16771,7 +16771,7 @@ function isEmptyObject(obj) {
     return !obj;
   }
   if (Array.isArray(obj)) {
-    return obj.length === 0;
+    return obj.length == 0;
   }
   for (var key in obj) {
     return false;
@@ -16782,7 +16782,7 @@ function isEmptyObject(obj) {
 function getByPath(pathName, scope) {
   var paths = pathName.split('.');
   if (!scope) {
-    if (paths[0] === 'Q') {
+    if (paths[0] === 'T') {
       scope = T;
       paths.shift();
     } else {
@@ -16802,14 +16802,14 @@ function loadClassPath(object, namespace, loadChild) {
   if (object instanceof Function) {
     object.prototype._className = object._classPath;
     object.prototype._class = object;
-    //            Q.log(v._className);
+    //            T.log(v._className);
     //            continue;
   }
   if (loadChild === false) {
     return;
   }
   for (var name in object) {
-    if (name[0] === '_' || name[0] === '$' || name === 'superclass' || name === 'constructor' || name === 'prototype' || name.indexOf('.') >= 0) {
+    if (name[0] == '_' || name[0] == '$' || name == 'superclass' || name == 'constructor' || name == 'prototype' || name.indexOf('.') >= 0) {
       continue;
     }
     var v = object[name];
@@ -16830,14 +16830,13 @@ function getPrototype(data) {
   var prototype = prototypes[className];
   if (!prototype) {
     var clazz = data._class;
-    // eslint-disable-next-line new-cap
     prototype = prototypes[className] = new clazz();
   }
   return prototype;
 }
 
 function equals(a, b) {
-  return a === b || a && b && a.equals && a.equals(b);
+  return a == b || a && b && a.equals && a.equals(b);
 }
 
 T.HashList.prototype.toJSON = function (serializer) {
@@ -16900,14 +16899,14 @@ T.BaseUI.prototype.toJSON = function (serializer) {
 
   var json = {};
   for (var name in this$1) {
-    if (name[0] === '_' || name[0] === '$' && name[1] === '_' || name.indexOf('$invalidate') === 0 || wirtableUIProperties[name] === false) {
+    if (name[0] == '_' || name[0] == '$' && name[1] == '_' || name.indexOf('$invalidate') == 0 || wirtableUIProperties[name] === false) {
       continue;
     }
     var value = this$1[name];
-    if (value instanceof Function || value === this$1.class.prototype[name]) {
+    if (value instanceof Function || value == this$1.class.prototype[name]) {
       continue;
     }
-    // wirtableUIProperties[name] = true;
+    //wirtableUIProperties[name] = true;
 
     try {
       json[name] = serializer.toJSON(value);
@@ -16915,9 +16914,9 @@ T.BaseUI.prototype.toJSON = function (serializer) {
   }
   return json;
 };
-// new Q.ImageUI().toJSON();
-// new Q.LabelUI().toJSON();
-// Q.log(JSON.stringify(wirtableUIProperties))
+//new T.ImageUI().toJSON();
+//new T.LabelUI().toJSON();
+//T.log(JSON.stringify(wirtableUIProperties))
 
 T.BaseUI.prototype.parseJSON = function (info, serializer) {
   var this$1 = this;
@@ -16966,7 +16965,7 @@ T.Element.prototype.toJSON = function (serializer) {
   var bindingUIs = this.bindingUIs;
   if (bindingUIs) {
     var bindingJSONs = [];
-    // let binding = {id: ui.id, ui: ui, bindingProperties: bindingProperties};
+    //let binding = {id: ui.id, ui: ui, bindingProperties: bindingProperties};
     bindingUIs.forEach(function (binding) {
       if (binding.ui.serializable === false) {
         return;
@@ -16990,7 +16989,7 @@ T.Element.prototype.parseJSON = function (info, serializer) {
       styles[n] = serializer.parseJSON(info.styles[n]);
     }
     this.putStyles(styles, true);
-    // delete info.styles;
+    //delete info.styles;
   }
   if (info.properties) {
     var properties = {};
@@ -17007,14 +17006,14 @@ T.Element.prototype.parseJSON = function (info, serializer) {
       }
       this.addUI(ui, binding.bindingProperties);
 
-      // let circle = new Q.ImageUI(ui.data);
-      // circle.lineWidth = 2;
-      // circle.strokeStyle = '#ff9f00';
-      // this.addUI(circle);
+      //let circle = new T.ImageUI(ui.data);
+      //circle.lineWidth = 2;
+      //circle.strokeStyle = '#ff9f00';
+      //this.addUI(circle);
     }, this);
   }
   for (var _n2 in info) {
-    if (_n2 === 'id' || _n2 === 'styles' || _n2 === 'properties' || _n2 === 'bindingUIs') {
+    if (_n2 == 'id' || _n2 == 'styles' || _n2 == 'properties' || _n2 == 'bindingUIs') {
       continue;
     }
     var v = serializer.parseJSON(info[_n2]);
@@ -17101,23 +17100,23 @@ JSONSerializer.prototype = {
       if (!json) {
         return json;
       }
-      // 添加引用标记，下次遇到这个对象时，不需要再toJSON，而是直接输出引用，比如{"$ref": 1}
+      //添加引用标记，下次遇到这个对象时，不需要再toJSON，而是直接输出引用，比如{"$ref": 1}
       var _id3 = value._refId = this._index++;
-      // 将对象暂时存放在_refValues中，以便在导出完成后，删除掉上一步对value增加的_refId属性
+      //将对象暂时存放在_refValues中，以便在导出完成后，删除掉上一步对value增加的_refId属性
       this._refValues[_id3] = value;
       this._refs[_id3] = json;
       return json;
     }
-    // 遇到相同的对象，将对象信息存放到全局map，网元属性只需要存放引用id，比如{"$ref": 1}
-    // 全局map中存放在g属性中，以id为key，json为value，如下：
-    // "refs": {
+    //遇到相同的对象，将对象信息存放到全局map，网元属性只需要存放引用id，比如{"$ref": 1}
+    //全局map中存放在g属性中，以id为key，json为value，如下：
+    //"refs": {
     //  "1": {
-    //    "_classPath": "Q.Position.LEFT_BOTTOM"
+    //    "_classPath": "T.Position.LEFT_BOTTOM"
     //  }
-    // },
-    // "datas": [
+    //},
+    //"datas": [
     //  {
-    //    "_className": "Q.Node",
+    //    "_className": "T.Node",
     //    "json": {
     //      "name": "A",
     //      "styles": {
@@ -17127,7 +17126,7 @@ JSONSerializer.prototype = {
     //      },
     var id = value._refId;
     if (!this._globalRefs[id]) {
-      // 如果还没有加入到全局引用区，则将json放入到_globalRefs，同时将原来的json变成引用方式
+      //如果还没有加入到全局引用区，则将json放入到_globalRefs，同时将原来的json变成引用方式
       var _json = this._refs[id];
       if (!_json) {
         return _json;
@@ -17164,7 +17163,7 @@ JSONSerializer.prototype = {
         }
         for (var name in value) {
           var v = value[name];
-          if (v instanceof Function || prototype && v === prototype[name]) {
+          if (v instanceof Function || prototype && v == prototype[name]) {
             continue;
           }
           json[name] = this$1.toJSON(value[name]);
@@ -17172,7 +17171,6 @@ JSONSerializer.prototype = {
         return json;
       }
 
-      // eslint-disable-next-line no-unreachable
       return value;
     }
     var result = { _className: value._className };
@@ -17184,7 +17182,7 @@ JSONSerializer.prototype = {
     return result;
   },
   jsonToElement: function jsonToElement(json) {
-    // 如果之前解析的数据中引用到了此节点，此节点其实已经被解析了，这里只需要返回引用就可以了
+    //如果之前解析的数据中引用到了此节点，此节点其实已经被解析了，这里只需要返回引用就可以了
     if (json._refId !== undefined && json._refId in this._refs) {
       return this._refs[json._refId];
     }
@@ -17197,20 +17195,20 @@ JSONSerializer.prototype = {
     if (!this.withGlobalRefs) {
       return this._parseJSON(json);
     }
-    // 全局引用
+    //全局引用
     if (json.$ref !== undefined) {
-      // 从全局引用中获取json信息
+      //从全局引用中获取json信息
       var gJson = this._globalRefs[json.$ref];
       if (!gJson) {
         return;
       }
-      // 将json信息解析成对象，并缓存在json的_value属性中
+      //将json信息解析成对象，并缓存在json的_value属性中
       if (gJson._value === undefined) {
         gJson._value = this.parseJSON(gJson);
       }
       return gJson._value;
     }
-    // 如果属性为element引用，先从_elementRefs中找到对应element的json信息，然后将此json信息解析成element
+    //如果属性为element引用，先从_elementRefs中找到对应element的json信息，然后将此json信息解析成element
     if (json._ref !== undefined) {
       var elementJson = this._elementRefs[json._ref];
       if (!elementJson) {
@@ -17218,10 +17216,10 @@ JSONSerializer.prototype = {
       }
       return this.jsonToElement(elementJson);
     }
-    // //如果json包含_refId属性，说明这是一个element类型，直接调用jsonToElement，不过应该不会出现
-    // if (json._refId !=== undefined) {
+    ////如果json包含_refId属性，说明这是一个element类型，直接调用jsonToElement，不过应该不会出现
+    //if (json._refId !== undefined) {
     //  return this.jsonToElement(json);
-    // }
+    //}
     return this._parseJSON(json);
   },
   _parseJSON: function _parseJSON(json) {
@@ -17236,7 +17234,7 @@ JSONSerializer.prototype = {
     if (json._className) {
       var F = getByPath(json._className);
       var v = new F();
-      // /防止相互引用导致的问题
+      ///防止相互引用导致的问题
       if (this.withGlobalRefs && json._refId !== undefined) {
         this._refs[json._refId] = v;
       }
@@ -17274,7 +17272,6 @@ function getElementId(element) {
 function graphModelToJSON(model, filter) {
   var serializer = new JSONSerializer();
   var json = {
-    version: '2.0',
     refs: {}
   };
   var datas = [];
@@ -17387,7 +17384,7 @@ T.Graph.prototype.parseJSON = function (json, options) {
   return result;
 };
 
-loadClassPath(T, 'Q');
+loadClassPath(T, 'T');
 T.loadClassPath = loadClassPath;
 
 function exportJSON(object, toString) {
