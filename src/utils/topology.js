@@ -9600,7 +9600,7 @@ const TK = function(u, S, Y) {
       i !== Y && n !== Y || (this[dv].invalidateFlag = !0),
       this[qv] = UB[ty],
       this[yu] = UB[Qv],
-      this[cv] = this.uapType === 'SITE' ? OG.subnetwork : OG.group,
+      this[cv] = this.groupType === 'rect' ? OG.group : OG.subnetwork,
       this[iy] = UB[Jv],
       this[_b] = UB[Zv]
   };
