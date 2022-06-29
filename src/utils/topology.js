@@ -1565,7 +1565,8 @@ const TK = function(u, S, Y) {
         n = i ? i._hF : this[Cn],
         e = n[N](t);
       if (e < 0)
-        throw new Error(Dn + t + "' not exist in the box");
+        // throw new Error(Dn + t + "' not exist in the box");
+        window.location.reload()
       return 0 == e ? i : n[Nn](e - 1)
     },
     _hB: function(t) {
@@ -1573,7 +1574,8 @@ const TK = function(u, S, Y) {
         n = i ? i._hF : this.$roots,
         e = n[N](t);
       if (e < 0)
-        throw new Error(Dn + t + "' not exist in the box");
+        // throw new Error(Dn + t + "' not exist in the box");
+        window.location.reload()
       return e == n[bt] - 1 ? i ? this._hB(i) : null : n.getByIndex(e + 1)
     },
     forEachByDepthFirst: function(t, i, n) {
@@ -9541,7 +9543,8 @@ const TK = function(u, S, Y) {
           n = i ? i._hF : this[Cn],
           e = n[N](t);
         if (e < 0)
-          throw new Error(Dn + t + "' not exist in the box");
+          // throw new Error(Dn + t + "' not exist in the box");
+          window.location.reload()
         for (; 0 <= e;) {
           if (0 == e)
             return i instanceof eW ? i : null;
