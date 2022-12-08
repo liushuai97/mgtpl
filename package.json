@@ -1,6 +1,6 @@
 {
   "name": "mgtpl",
-  "version": "1.1.27",
+  "version": "1.1.28",
   "description": "Handy Text Weaken filters plugins for your project",
   "main": "dist/mgtpl.js",
   "scripts": {
