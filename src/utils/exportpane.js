@@ -4,29 +4,56 @@ import { getI18NString } from "../lib/i18n.js";
 import { showDialog } from "../lib/dialog.js";
 import { createElement, isBlobSupported, saveAs } from "../lib/utils.js";
 
+let lang = {
+  'cn': {
+    'title': '图片导出预览',
+    'size': '画布大小',
+    'doubleClick': '双击选择全画布范围',
+    'export': '导出范围',
+    'scale': '缩放比例',
+    'output': '输出大小',
+    'export': '导出',
+    'print': '打印',
+    'error': '图幅太大，导出时可能出现内存不足',
+  },
+  'en': {
+    'title': 'Image export preview',
+    'size': 'Canvas Size',
+    'doubleClick': 'Double click  to select the whole canvas range',
+    'export': 'Export Range',
+    'scale': 'Scale',
+    'output': 'Output Size',
+    'export': 'Export',
+    'print': 'Print',
+    'error': 'Image size is too large, the export may appear memory error',
+  }
+}
+
+let language
+
 let template = '\
-  <h3 style="text-align: center;">' + getI18NString('Image export preview') + '</h3>\
+  <h3 style="text-align: center;">' + lang[language]['title'] + '</h3>\
   <div>\
-  <label>' + getI18NString('Canvas Size') + '</label>\
+  <label>' + lang[language]['size'] + '</label>\
   <span class ="graph-export-panel__canvas_size"></span>\
   </div>\
-  <div style="text-align: center;" title="' + getI18NString('Double click  to select the whole canvas range') + '">\
+  <div style="text-align: center;" title="' + lang[language]['doubleClick'] + '">\
   <div class ="graph-export-panel__export_canvas" style="position: relative; display: inline-block;">\
   </div>\
   </div>\
   <div>\
-  <label>' + getI18NString('Export Range') + '</label>\
+  <label>' + lang[language]['export'] + '</label>\
   <span class ="graph-export-panel__export_bounds"></span>\
   </div>\
   <div>\
-  <label>' + getI18NString('Scale') + ': <input class ="graph-export-panel__export_scale" type="range" value="1" step="0.2" min="0.2" max="3"><span class ="graph-export-panel__export_scale_label">1</span></label>\
+  <label>' + lang[language]['scale'] + ': <input class ="graph-export-panel__export_scale" type="range" value="1" step="0.2" min="0.2" max="3"><span class ="graph-export-panel__export_scale_label">1</span></label>\
   </div>\
   <div>\
-  <label>' + getI18NString('Output Size') + ': </label><span class ="graph-export-panel__export_size"></span>\
+  <label>' + lang[language]['output'] + ': </label><span class ="graph-export-panel__export_size"></span>\
   </div>\
   <div style="text-align: right">\
-  <button type="submit" class="btn btn-primary graph-export-panel__export_submit">' + getI18NString('Export') + '</button>\
-  <button type="submit" class="btn btn-primary graph-export-panel__print_submit">' + getI18NString('Print') + '</button>\
+  <button type="submit" class="btn btn-primary graph-export-panel__export_submit">' + lang[language]['export'] + '</button>\
+  <button type="submit" class="btn btn-primary graph-export-panel__print_submit">' + lang[language]['print'] + '</button>\
   </div>';
 
 class ResizeBox {
@@ -265,7 +292,7 @@ class ExportPanel {
       let h = clipBounds.height / this.imageInfo.scale * scale | 0;
       let info = w + " X " + h;
       if (w * h > 3000 * 4000) {
-        info += "<span style='color: #F66;'>" + getI18NString('Image size is too large, the export may appear memory error') + "</span>";
+        info += "<span style='color: #F66;'>" + lang[language]['error'] + "</span>";
       }
       export_size.innerHTML = info;
     };
@@ -355,7 +382,9 @@ class ExportPanel {
 
 let exportPanel;
 
-export function showExportPanel (graph) {
+export function showExportPanel (graph, langs) {
+  // 显示参数 - 适配中英文
+  language = langs
   if (!exportPanel) {
     exportPanel = new ExportPanel();
   }
