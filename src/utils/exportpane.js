@@ -1,33 +1,7 @@
 /* eslint-disable  */
 import T from '../lib/index.js';
-import { getI18NString } from "../lib/i18n.js";
 import { showDialog } from "../lib/dialog.js";
 import { createElement, isBlobSupported, saveAs } from "../lib/utils.js";
-
-let template = '\
-  <h3 style="text-align: center;">' + getI18NString('Image export preview') + '</h3>\
-  <div>\
-  <label>' + getI18NString('Canvas Size') + '</label>\
-  <span class ="graph-export-panel__canvas_size"></span>\
-  </div>\
-  <div style="text-align: center;" title="' + getI18NString('Double click  to select the whole canvas range') + '">\
-  <div class ="graph-export-panel__export_canvas" style="position: relative; display: inline-block;">\
-  </div>\
-  </div>\
-  <div>\
-  <label>' + getI18NString('Export Range') + '</label>\
-  <span class ="graph-export-panel__export_bounds"></span>\
-  </div>\
-  <div>\
-  <label>' + getI18NString('Scale') + ': <input class ="graph-export-panel__export_scale" type="range" value="1" step="0.2" min="0.2" max="3"><span class ="graph-export-panel__export_scale_label">1</span></label>\
-  </div>\
-  <div>\
-  <label>' + getI18NString('Output Size') + ': </label><span class ="graph-export-panel__export_size"></span>\
-  </div>\
-  <div style="text-align: right">\
-  <button type="submit" class="btn btn-primary graph-export-panel__export_submit">' + getI18NString('Export') + '</button>\
-  <button type="submit" class="btn btn-primary graph-export-panel__print_submit">' + getI18NString('Print') + '</button>\
-  </div>';
 
 class ResizeBox {
   constructor(parent, onBoundsChange) {
@@ -259,13 +233,14 @@ class ExportPanel {
       this.updateOutputSize();
     };
     this.updateOutputSize = function() {
+      let lang = sessionStorage.getItem('language') === 'zh-CN'
       let export_scale = this._getChild(".graph-export-panel__export_scale");
       let scale = export_scale.value;
       let w = clipBounds.width / this.imageInfo.scale * scale | 0;
       let h = clipBounds.height / this.imageInfo.scale * scale | 0;
       let info = w + " X " + h;
       if (w * h > 3000 * 4000) {
-        info += "<span style='color: #F66;'>" + getI18NString('Image size is too large, the export may appear memory error') + "</span>";
+        info += `<span style='color: #F66;'>${lang ? '图幅太大，导出时可能出现内存不足' : 'Image size is too large, the export may appear memory error'}</span>`;
       }
       export_size.innerHTML = info;
     };
@@ -287,8 +262,35 @@ class ExportPanel {
   }
 
   _initDom () {
+    let lang = sessionStorage.getItem('language') === 'zh-CN'
     let export_panel = this.html = createElement({
-      html: template
+      html: `<h3 style="text-align: center;">${lang ? '图片导出预览' : 'Image export preview'}</h3>
+            <div>
+              <label>${lang ? '画布大小' : 'Canvas Size'}</label>
+              <span class ="graph-export-panel__canvas_size"></span>
+            </div>
+            <div style="text-align: center;" title="${lang ? '双击选择全画布范围' : 'Double click  to select the whole canvas range'}">
+              <div class ="graph-export-panel__export_canvas" style="position: relative; display: inline-block;">
+              </div>
+            </div>
+            <div>
+              <label>${lang ? '导出范围' : 'Export Range'}</label>
+              <span class ="graph-export-panel__export_bounds"></span>
+            </div>
+            <div>
+              <label>${lang ? '缩放比例' : 'Scale'}: 
+                <input class ="graph-export-panel__export_scale" type="range" value="1" step="0.2" min="0.2" max="3" />
+                <span class ="graph-export-panel__export_scale_label">1</span>
+              </label>
+            </div>
+            <div>
+              <label>${lang ? '输出大小' : 'Output Size'}: </label>
+              <span class ="graph-export-panel__export_size"></span>
+            </div>
+            <div style="text-align: right">
+              <button type="submit" class="btn btn-primary graph-export-panel__export_submit">${lang ? '导出' : 'Export'}</button>
+              <button type="submit" class="btn btn-primary graph-export-panel__print_submit">${lang ? '打印' : 'Print'}</button>
+            </div>`
     });
     export_panel.addEventListener("mousedown", function(evt) {
       if (evt.target == export_panel) {
@@ -355,8 +357,7 @@ class ExportPanel {
 
 let exportPanel;
 
-export function showExportPanel (graph, language, win = window) {
-  win.language = language
+export function showExportPanel (graph) {
   if (!exportPanel) {
     exportPanel = new ExportPanel();
   }

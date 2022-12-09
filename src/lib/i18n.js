@@ -113,7 +113,7 @@ let i18n = {
   }
 };
 
-let lang = window.language || navigator.language || navigator.browserLanguage;
+let lang = navigator.language || navigator.browserLanguage;
 lang = lang.toLowerCase();
 
 export function getI18NString (key) {
