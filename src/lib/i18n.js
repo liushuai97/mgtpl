@@ -224,7 +224,7 @@ let i18n = {
   }
 };
 
-let lang = sessionStorage.getItem('language') || navigator.language || navigator.browserLanguage;
+let lang = window.language || navigator.language || navigator.browserLanguage;
 lang = lang.toLowerCase();
 
 export function getI18NString (key) {
