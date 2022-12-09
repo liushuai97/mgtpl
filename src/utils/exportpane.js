@@ -355,7 +355,8 @@ class ExportPanel {
 
 let exportPanel;
 
-export function showExportPanel (graph) {
+export function showExportPanel (graph, language, win = window) {
+  win.language = language
   if (!exportPanel) {
     exportPanel = new ExportPanel();
   }
